@@ -42,8 +42,17 @@ ggplot(data = act2, aes(steps))+geom_histogram(bins = 30)+labs(title = 'Histogra
 
 ```r
 # Calculate mean and median steps per day
-mean_step = mean(act1$steps, na.rm = T)
+mean_step = mean(act1$steps, na.rm = T, digits = 2)
 median_step = median(act1$steps, na.rm = T)
+mean_step = round(mean_step, digits = 2)
+format(mean_step, scientific=FALSE)
+```
+
+```
+## [1] "10766.19"
+```
+
+```r
 mean_step
 ```
 
@@ -59,7 +68,7 @@ median_step
 ## [1] 10765
 ```
 
-* The mean of total number of steps taken per day is ``1.0766189\times 10^{4}``
+* The mean of total number of steps taken per day is 10766.19
 * The median of total number of steps taken per day is ``10765``
 
 ## What is the average daily activity pattern?
@@ -76,7 +85,7 @@ pattern <- activity %>% mutate(date = ymd(date)) %>% group_by(interval) %>% summ
 ```
 
 ```r
-plot(pattern$msteps, type = 'l')
+ggplot(data = pattern, aes(interval,msteps))+geom_line()+labs(title = 'Average Number of Steps in Five-Minute Intervals', x='Interval', y='Steps')
 ```
 
 ![](PA1_template_files/figure-html/avg_activity-1.png)<!-- -->
@@ -131,40 +140,16 @@ for (i in 1:nrow(activity1)) {
 }
 activity1$day <- as.factor(activity1$day)
 # Weekday vs weekend pattern
-#Seperate weekdays and weekends
-actwd <- activity1[activity1$day == 'weekday',]
-actwd <- select(actwd, -msteps)
-actwk <- activity1[activity1$day == 'weekend',]
-actwk <- select(actwk, -msteps)
-
-#Calculate pattern
-
-patternwd <- actwd %>% group_by(interval) %>% summarise(msteps = mean(steps))
+patternw <- activity1 %>% group_by(interval,day) %>% summarise(mstepw = mean(steps))
 ```
 
 ```
-## `summarise()` ungrouping output (override with `.groups` argument)
+## `summarise()` regrouping output by 'interval' (override with `.groups` argument)
 ```
 
 ```r
-actwd1 <- left_join(actwd, patternwd, by = 'interval')
-actwd1$intv <- 0:(nrow(actwd1)-1)
-
-patternwk <- actwk %>% group_by(interval) %>% summarise(msteps = mean(steps))
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
-actwk1 <- left_join(actwk, patternwk, by = 'interval')
-actwk1$intv <- 0:(nrow(actwk1)-1)
-
 #Plot
-wdplot <- ggplot(data = actwd1, aes(x=intv))+geom_line(aes(y=steps))+geom_line(aes(y=msteps), color='red')+labs(title = 'Weekday', x='Interval', y='Steps')
-wkplot <- ggplot(data = actwk1, aes(x=intv))+geom_line(aes(y=steps))+geom_line(aes(y=msteps), color='red')+labs(title = 'Weekend', x='Interval', y='Steps')
-grid.arrange(wdplot, wkplot, nrow=2)
+ggplot(patternw)+geom_line(aes(interval, mstepw))+facet_wrap(~day, nrow = 2)+labs(x='Interval', y='Number of Steps')
 ```
 
 ![](PA1_template_files/figure-html/differences-1.png)<!-- -->
