@@ -44,15 +44,6 @@ ggplot(data = act2, aes(steps))+geom_histogram(bins = 30)+labs(title = 'Histogra
 # Calculate mean and median steps per day
 mean_step = mean(act1$steps, na.rm = T, digits = 2)
 median_step = median(act1$steps, na.rm = T)
-mean_step = round(mean_step, digits = 2)
-format(mean_step, scientific=FALSE)
-```
-
-```
-## [1] "10766.19"
-```
-
-```r
 mean_step
 ```
 
@@ -149,7 +140,7 @@ patternw <- activity1 %>% group_by(interval,day) %>% summarise(mstepw = mean(ste
 
 ```r
 #Plot
-ggplot(patternw)+geom_line(aes(interval, mstepw))+facet_wrap(~day, nrow = 2)+labs(x='Interval', y='Number of Steps')
+ggplot(patternw)+geom_line(aes(interval, mstepw))+facet_wrap(~day, nrow = 2)+labs(title = 'Weekday and Weekend Differences' ,x='Interval', y='Number of Steps')
 ```
 
 ![](PA1_template_files/figure-html/differences-1.png)<!-- -->
